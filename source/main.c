@@ -55,7 +55,7 @@ uint32_t* free_mem;
 
 game_list_t hdd_cheats = {
 	.icon_id = header_ico_cht_png_index,
-	.title = "غش القرص الصلب",
+	.title = "ﺶﻏ ﺹﺮﻘﻟﺍ ﺐﻠﺼﻟﺍ",
     .list = NULL,
     .path = GOLDCHEATS_DATA_PATH,
     .ReadList = &ReadUserList,
@@ -65,7 +65,7 @@ game_list_t hdd_cheats = {
 
 game_list_t hdd_patches = {
     .icon_id = header_ico_cht_png_index,
-    .title = "تصحيحات اللعبة",
+    .title = "ﺕﺎﺤﻴﺤﺼﺗ ﺔﺒﻌﻠﻟﺍ",
     .list = NULL,
     .path = GOLDCHEATS_PATCH_PATH "xml/",
     .ReadList = &ReadPatchList,
@@ -75,7 +75,7 @@ game_list_t hdd_patches = {
 
 game_list_t online_cheats = {
 	.icon_id = header_ico_cht_png_index,
-	.title = "غش عبر الإنترنت",
+	.title = "ﺶﻏ ﺮﺒﻋ ﺖﻧﺮﺘﻧﻹﺍ",
     .list = NULL,
     .path = ONLINE_URL,
     .ReadList = &ReadOnlineList,
@@ -85,7 +85,7 @@ game_list_t online_cheats = {
 
 game_list_t update_cheats = {
     .icon_id = header_ico_xmb_png_index,
-    .title = "تحديث الغش، التصحيحات والإضافات",
+    .title = "ﺚﻳﺪﺤﺗ ،ﺶﻐﻟﺍ ﺕﺎﺤﻴﺤﺼﺘﻟﺍ ﺕﺎﻓﺎﺿﻹﺍﻭ",
     .list = NULL,
     .path = "",
     .ReadList = &ReadBackupList,
@@ -102,26 +102,26 @@ static const char* get_button_prompts(int menu_id)
 		case MENU_PATCH_VIEW:
 		case MENU_CREDITS:
 		case MENU_SAVE_DETAILS:
-			prompt = "\x13 رجوع";
+			prompt = "\x13 ﻉﻮﺟﺭ";
 			break;
 
 		case MENU_SETTINGS:
 		case MENU_CODE_OPTIONS:
-			prompt = "\x10 اختيار    \x13 رجوع";
+			prompt = "\x10 ﺭﺎﻴﺘﺧﺍ    \x13 ﻉﻮﺟﺭ";
 			break;
 
 		case MENU_UPDATE_CHEATS:
-			prompt = "\x10 اختيار    \x13 رجوع    \x11 تحديث";
+			prompt = "\x10 ﺭﺎﻴﺘﺧﺍ    \x13 ﻉﻮﺟﺭ    \x11 ﺚﻳﺪﺤﺗ";
 			break;
 
 		case MENU_HDD_CHEATS:
 		case MENU_HDD_PATCHES:
 		case MENU_ONLINE_DB:
-			prompt = "\x10 اختيار    \x13 رجوع    \x12 تصفية    \x11 تحديث";
+			prompt = "\x10 ﺭﺎﻴﺘﺧﺍ    \x13 ﻉﻮﺟﺭ    \x12 ﺔﻴﻔﺼﺗ    \x11 ﺚﻳﺪﺤﺗ";
 			break;
 
 		case MENU_PATCHES:
-			prompt = "\x10 اختيار    \x12 عرض الكود    \x13 رجوع";
+			prompt = "\x10 ﺭﺎﻴﺘﺧﺍ    \x12 ﺽﺮﻋ ﺩﻮﻜﻟﺍ    \x13 ﻉﻮﺟﺭ";
 			break;
 
 		case MENU_MAIN_SCREEN:
@@ -140,7 +140,7 @@ static int initPad(void)
 
 	if (orbisPadInit() < 0)
 	{
-		LOG("[خطأ] فشل تهيئة مكتبة لوحة التحكم!");
+		LOG("[ﺄﻄﺧ] ﻞﺸﻓ ﺔﺌﻴﻬﺗ ﺔﺒﺘﻜﻣ ﺔﺣﻮﻟ ﻢﻜﺤﺘﻟﺍ!");
 		return 0;
 	}
 
@@ -214,7 +214,7 @@ static int LoadTextures_Menu(void)
     return 1;
 
 u32 tBytes = free_mem - texture_mem;
-LOG("LoadTextures_Menu() :: تم تخصيص %db (%.02fkb, %.02fmb) للنسائج", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
+LOG("LoadTextures_Menu() :: ﻢﺗ ﺺﻴﺼﺨﺗ %db (%.02fkb, %.02fmb) ﺞﺋﺎﺴﻨﻠﻟ", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
 return 1;
 }
 
@@ -226,7 +226,7 @@ static int LoadSounds(void* data)
 
 	if (!drmp3_init_file(&wav, CHEATSMGR_APP_PATH "audio/background_music.mp3", NULL))
 	{
-		LOG("[خطأ] فشل فك ترميز ملف الصوت");
+		LOG("[ﺄﻄﺧ] ﻞﺸﻓ ﻚﻓ ﺰﻴﻣﺮﺗ ﻒﻠﻣ ﺕﻮﺼﻟﺍ");
 		return -1;
 	}
 
@@ -247,7 +247,7 @@ static int LoadSounds(void* data)
 
 		if (sceAudioOutOutput(audio, pSampleData + sOffs) < 0)
 		{
-			LOG("فشل إخراج الصوت");
+			LOG("ﻞﺸﻓ ﺝﺍﺮﺧﺇ ﺕﻮﺼﻟﺍ");
 			return -1;
 		}
 
@@ -295,7 +295,7 @@ static void helpFooter(int id)
 
 static void terminate(void)
 {
-	LOG("الخروج...");
+	LOG("ﺝﻭﺮﺨﻟﺍ...");
 
 	terminate_jbc();
 	sceSystemServiceLoadExec("exit", NULL);
@@ -305,19 +305,19 @@ static int initInternal(void)
 {
     int ret = sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_SYSTEM_SERVICE);
     if (ret != SUCCESS) {
-        LOG("فشل تحميل الموديول: SYSTEM_SERVICE (0x%08x)\n", ret);
+        LOG("ﻞﺸﻓ ﻞﻴﻤﺤﺗ ﻝﻮﻳﺩﻮﻤﻟﺍ: SYSTEM_SERVICE (0x%08x)\n", ret);
         return 0;
     }
 
     ret = sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_USER_SERVICE);
     if (ret != SUCCESS) {
-        LOG("فشل تحميل الموديول: USER_SERVICE (0x%08x)\n", ret);
+        LOG("ﻞﺸﻓ ﻞﻴﻤﺤﺗ ﻝﻮﻳﺩﻮﻤﻟﺍ: USER_SERVICE (0x%08x)\n", ret);
         return 0;
     }
 
     ret = sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_SAVE_DATA);
     if (ret != SUCCESS) {
-        LOG("فشل تحميل الموديول: SAVE_DATA (0x%08x)\n", ret);
+        LOG("ﻞﺸﻓ ﻞﻴﻤﺤﺗ ﻝﻮﻳﺩﻮﻤﻟﺍ: SAVE_DATA (0x%08x)\n", ret);
         return 0;
     }
 
@@ -334,11 +334,11 @@ s32 main(s32 argc, const char* argv[])
 	dbglogger_init();
 #endif
 
-	LOG("تهيئة SDL");
+	LOG("ﺔﺌﻴﻬﺗ SDL");
 
 	if (SDL_Init(SDL_INIT_VIDEO) != SUCCESS)
 	{
-		LOG("فشل تهيئة SDL: %s", SDL_GetError());
+		LOG("ﻞﺸﻓ ﺔﺌﻴﻬﺗ SDL: %s", SDL_GetError());
 		return (-1);
 	}
 
@@ -349,7 +349,7 @@ s32 main(s32 argc, const char* argv[])
 	if (sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_AUDIOOUT) < 0 ||
 		sceAudioOutInit() != SUCCESS)
 	{
-		LOG("[خطأ] فشل تهيئة إخراج الصوت");
+		LOG("[ﺄﻄﺧ] ﻞﺸﻓ ﺔﺌﻴﻬﺗ ﺝﺍﺮﺧﺇ ﺕﻮﺼﻟﺍ");
 		return (-1);
 	}
 
@@ -357,11 +357,11 @@ s32 main(s32 argc, const char* argv[])
 
 	if (audio <= 0)
 	{
-		LOG("[خطأ] فشل فتح الصوت على المنفذ الرئيسي");
+		LOG("[ﺄﻄﺧ] ﻞﺸﻓ ﺢﺘﻓ ﺕﻮﺼﻟﺍ ﻰﻠﻋ ﺬﻔﻨﻤﻟﺍ ﻲﺴﻴﺋﺮﻟﺍ");
 		return audio;
 	}
 
-	LOG("إنشاء نافذة");
+	LOG("ﺀﺎﺸﻧﺇ ﺓﺬﻓﺎﻧ");
 	window = SDL_CreateWindow("main", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 	if (!window) {
 		LOG("SDL_CreateWindow: %s", SDL_GetError());
@@ -383,21 +383,21 @@ s32 main(s32 argc, const char* argv[])
 	
 	if (sceSysmoduleLoadModule(ORBIS_SYSMODULE_FREETYPE_OL) < 0)
 	{
-		LOG("فشل تحميل freetype!");
+		LOG("ﻞﺸﻓ ﻞﻴﻤﺤﺗ freetype!");
 		return (-1);
 	}
 
 	if (sceSysmoduleLoadModule(ORBIS_SYSMODULE_MESSAGE_DIALOG) < 0 ||
 		sceSysmoduleLoadModule(ORBIS_SYSMODULE_IME_DIALOG) < 0)
 	{
-		LOG("فشل تحميل Dialog!");
+		LOG("ﻞﺸﻓ ﻞﻴﻤﺤﺗ Dialog!");
 		return (-1);
 	}
 
 	if (sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_COMMON_DIALOG) < 0 ||
 		sceCommonDialogInitialize() < 0)
 	{
-		LOG("فشل تهيئة CommonDialog!");
+		LOG("ﻞﺸﻓ ﺔﺌﻴﻬﺗ CommonDialog!");
 		return (-1);
 	}
 
@@ -405,7 +405,7 @@ s32 main(s32 argc, const char* argv[])
 	
 	if (!LoadTextures_Menu())
 	{
-		LOG("فشل تحميل نسيجات القائمة!");
+		LOG("ﻞﺸﻓ ﻞﻴﻤﺤﺗ ﺕﺎﺠﻴﺴﻧ ﺔﻤﺋﺎﻘﻟﺍ!");
 		return (-1);
 	}
 
@@ -421,7 +421,7 @@ s32 main(s32 argc, const char* argv[])
 		{
 			char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
 			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
-			show_message("تم تثبيت بيانات التطبيق المحلية بنجاح:\n\n- %s- %s", cheat_ver, patch_ver);
+			show_message("ﻢﺗ ﺖﻴﺒﺜﺗ ﺕﺎﻧﺎﻴﺑ ﻖﻴﺒﻄﺘﻟﺍ ﺔﻴﻠﺤﻤﻟﺍ ﺡﺎﺠﻨﺑ:\n\n- %s- %s", cheat_ver, patch_ver);
 			free(cheat_ver);
 			free(patch_ver);
 		}
