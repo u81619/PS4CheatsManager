@@ -1,7 +1,3 @@
-/* 
-	Cheats Manager PS4 main.c
-*/
-
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
@@ -19,22 +15,17 @@
 #include "common.h"
 #include "orbisPad.h"
 
-//Menus
 #include "menu.h"
 #include "menu_gui.h"
 
-//Font
 #include "libfont.h"
 #include "ttf_render.h"
 #include "font-16x32.h"
 
-//Sound
 #define DR_MP3_IMPLEMENTATION
 #include "dr_mp3.h"
 
-// Audio handle
 static int32_t audio = 0;
-
 
 #define load_menu_texture(name, type) \
 			if (!LoadMenuTexture(CHEATSMGR_APP_PATH "images/" #name "." #type , name##_##type##_index)) return 0;
@@ -54,20 +45,17 @@ app_config_t gcm_config = {
 };
 
 int close_app = 0;
-int idle_time = 0;                          // Set by readPad
+int idle_time = 0;
 
-png_texture * menu_textures;                // png_texture array for main menu, initialized in LoadTexture
-SDL_Window* window;                         // SDL window
-SDL_Renderer* renderer;                     // SDL software renderer
-uint32_t* texture_mem;                      // Pointers to texture memory
-uint32_t* free_mem;                         // Pointer after last texture
+png_texture * menu_textures;
+SDL_Window* window;
+SDL_Renderer* renderer;
+uint32_t* texture_mem;
+uint32_t* free_mem;
 
-/*
-* HDD cheats list
-*/
 game_list_t hdd_cheats = {
 	.icon_id = header_ico_cht_png_index,
-	.title = "HDD Cheats",
+	.title = "غش القرص الصلب",
     .list = NULL,
     .path = GOLDCHEATS_DATA_PATH,
     .ReadList = &ReadUserList,
@@ -75,12 +63,9 @@ game_list_t hdd_cheats = {
     .UpdatePath = NULL,
 };
 
-/*
-* HDD patches list
-*/
 game_list_t hdd_patches = {
     .icon_id = header_ico_cht_png_index,
-    .title = "Game Patches",
+    .title = "تصحيحات اللعبة",
     .list = NULL,
     .path = GOLDCHEATS_PATCH_PATH "xml/",
     .ReadList = &ReadPatchList,
@@ -88,12 +73,9 @@ game_list_t hdd_patches = {
     .UpdatePath = NULL,
 };
 
-/*
-* Online code list
-*/
 game_list_t online_cheats = {
 	.icon_id = header_ico_cht_png_index,
-	.title = "Online Cheats",
+	.title = "غش عبر الإنترنت",
     .list = NULL,
     .path = ONLINE_URL,
     .ReadList = &ReadOnlineList,
@@ -101,12 +83,9 @@ game_list_t online_cheats = {
     .UpdatePath = NULL,
 };
 
-/*
-* Update cheat code list
-*/
 game_list_t update_cheats = {
     .icon_id = header_ico_xmb_png_index,
-    .title = "Update Cheats, Patches & Plugins",
+    .title = "تحديث الغش، التصحيحات والإضافات",
     .list = NULL,
     .path = "",
     .ReadList = &ReadBackupList,
@@ -123,26 +102,26 @@ static const char* get_button_prompts(int menu_id)
 		case MENU_PATCH_VIEW:
 		case MENU_CREDITS:
 		case MENU_SAVE_DETAILS:
-			prompt = "\x13 Back";
+			prompt = "\x13 رجوع";
 			break;
 
 		case MENU_SETTINGS:
 		case MENU_CODE_OPTIONS:
-			prompt = "\x10 Select    \x13 Back";
+			prompt = "\x10 اختيار    \x13 رجوع";
 			break;
 
 		case MENU_UPDATE_CHEATS:
-			prompt = "\x10 Select    \x13 Back    \x11 Refresh";
+			prompt = "\x10 اختيار    \x13 رجوع    \x11 تحديث";
 			break;
 
 		case MENU_HDD_CHEATS:
 		case MENU_HDD_PATCHES:
 		case MENU_ONLINE_DB:
-			prompt = "\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh";
+			prompt = "\x10 اختيار    \x13 رجوع    \x12 تصفية    \x11 تحديث";
 			break;
 
 		case MENU_PATCHES:
-			prompt = "\x10 Select    \x12 View Code    \x13 Back";
+			prompt = "\x10 اختيار    \x12 عرض الكود    \x13 رجوع";
 			break;
 
 		case MENU_MAIN_SCREEN:
@@ -159,27 +138,24 @@ static int initPad(void)
 	if (sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_PAD) < 0)
 		return 0;
 
-	// Initialize the Pad library
 	if (orbisPadInit() < 0)
 	{
-		LOG("[ERROR] Failed to initialize pad library!");
+		LOG("[خطأ] فشل تهيئة مكتبة لوحة التحكم!");
 		return 0;
 	}
 
-	// Get the user ID
 	gcm_config.user_id = orbisPadGetConf()->userId;
 
 	return 1;
 }
 
-// Used only in initialization. Allocates 64 mb for textures and loads the font
 static int LoadTextures_Menu(void)
 {
 	texture_mem = malloc(256 * 32 * 32 * 4);
 	menu_textures = (png_texture *)calloc(TOTAL_MENU_TEXTURES, sizeof(png_texture));
 	
 	if(!texture_mem || !menu_textures)
-		return 0; // fail!
+		return 0;
 	
 	ResetFont();
 	free_mem = (u32 *) AddFontFromBitmapArray((u8 *) console_font_16x32, (u8 *) texture_mem, 0, 0xFF, 16, 32, 1, BIT7_FIRST_PIXEL);
@@ -191,7 +167,6 @@ static int LoadTextures_Menu(void)
 	free_mem = (u32*) init_ttf_table((u8*) free_mem);
 	set_ttf_window(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WIN_SKIP_LF);
 	
-	//Init Main Menu textures
 	load_menu_texture(bgimg, png);
 	load_menu_texture(bglist, png);
 	load_menu_texture(cheat, png);
@@ -236,11 +211,11 @@ static int LoadTextures_Menu(void)
 	load_menu_texture(titlescr_ico_xmb, png);
 	load_menu_texture(titlescr_logo, png);
 
-//	menu_textures[icon_png_file_index].texture = NULL;
+    return 1;
 
-	u32 tBytes = free_mem - texture_mem;
-	LOG("LoadTextures_Menu() :: Allocated %db (%.02fkb, %.02fmb) for textures", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
-	return 1;
+u32 tBytes = free_mem - texture_mem;
+LOG("LoadTextures_Menu() :: تم تخصيص %db (%.02fkb, %.02fmb) للنسائج", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
+return 1;
 }
 
 static int LoadSounds(void* data)
@@ -249,21 +224,17 @@ static int LoadSounds(void* data)
 	int32_t sOffs = 0;
 	drmp3 wav;
 
-	// Decode a mp3 file to play
 	if (!drmp3_init_file(&wav, CHEATSMGR_APP_PATH "audio/background_music.mp3", NULL))
 	{
-		LOG("[ERROR] Failed to decode audio file");
+		LOG("[خطأ] فشل فك ترميز ملف الصوت");
 		return -1;
 	}
 
-	// Calculate the sample count and allocate a buffer for the sample data accordingly
 	size_t sampleCount = drmp3_get_pcm_frame_count(&wav) * wav.channels;
 	drmp3_int16 *pSampleData = (drmp3_int16 *)malloc(sampleCount * sizeof(uint16_t));
 
-	// Decode the wav into pSampleData  wav.totalPCMFrameCount
 	drmp3_read_pcm_frames_s16(&wav, drmp3_get_pcm_frame_count(&wav), pSampleData);
 
-	// Play the song in a loop
 	while (!close_app)
 	{
 		if (*play_audio == 0)
@@ -272,12 +243,11 @@ static int LoadSounds(void* data)
 			continue;
 		}
 
-		/* Output audio */
-		sceAudioOutOutput(audio, NULL);	// NULL: wait for completion
+		sceAudioOutOutput(audio, NULL);
 
 		if (sceAudioOutOutput(audio, pSampleData + sOffs) < 0)
 		{
-			LOG("Failed to output audio");
+			LOG("فشل إخراج الصوت");
 			return -1;
 		}
 
@@ -295,7 +265,6 @@ static int LoadSounds(void* data)
 
 static void registerSpecialChars(void)
 {
-	// Register button icons
 	RegisterSpecialCharacter(orbisPadGetConf()->crossButtonOK ? CHAR_BTN_X : CHAR_BTN_O, 0, 1.0, &menu_textures[footer_ico_cross_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_S, 0, 1.0, &menu_textures[footer_ico_square_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_T, 0, 1.0, &menu_textures[footer_ico_triangle_png_index]);
@@ -326,7 +295,7 @@ static void helpFooter(int id)
 
 static void terminate(void)
 {
-	LOG("Exiting...");
+	LOG("الخروج...");
 
 	terminate_jbc();
 	sceSystemServiceLoadExec("exit", NULL);
@@ -334,36 +303,30 @@ static void terminate(void)
 
 static int initInternal(void)
 {
-    // load common modules
     int ret = sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_SYSTEM_SERVICE);
     if (ret != SUCCESS) {
-        LOG("load module failed: SYSTEM_SERVICE (0x%08x)\n", ret);
+        LOG("فشل تحميل الموديول: SYSTEM_SERVICE (0x%08x)\n", ret);
         return 0;
     }
 
     ret = sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_USER_SERVICE);
     if (ret != SUCCESS) {
-        LOG("load module failed: USER_SERVICE (0x%08x)\n", ret);
+        LOG("فشل تحميل الموديول: USER_SERVICE (0x%08x)\n", ret);
         return 0;
     }
 
     ret = sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_SAVE_DATA);
     if (ret != SUCCESS) {
-        LOG("load module failed: SAVE_DATA (0x%08x)\n", ret);
+        LOG("فشل تحميل الموديول: SAVE_DATA (0x%08x)\n", ret);
         return 0;
     }
 
     return 1;
 }
 
-
-/*
-	Program start
-*/
 s32 main(s32 argc, const char* argv[])
 {
 #ifdef DEBUG_ENABLE_LOG
-	// Frame tracking info for debugging
 	uint32_t lastFrameTicks  = 0;
 	uint32_t startFrameTicks = 0;
 	uint32_t deltaFrameTicks = 0;
@@ -371,12 +334,11 @@ s32 main(s32 argc, const char* argv[])
 	dbglogger_init();
 #endif
 
-	// Initialize SDL functions
-	LOG("Initializing SDL");
+	LOG("تهيئة SDL");
 
 	if (SDL_Init(SDL_INIT_VIDEO) != SUCCESS)
 	{
-		LOG("Failed to initialize SDL: %s", SDL_GetError());
+		LOG("فشل تهيئة SDL: %s", SDL_GetError());
 		return (-1);
 	}
 
@@ -384,39 +346,34 @@ s32 main(s32 argc, const char* argv[])
 	http_init();
 	initPad();
 
-	// Initialize audio output library
 	if (sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_AUDIOOUT) < 0 ||
 		sceAudioOutInit() != SUCCESS)
 	{
-		LOG("[ERROR] Failed to initialize audio output");
+		LOG("[خطأ] فشل تهيئة إخراج الصوت");
 		return (-1);
 	}
 
-	// Open a handle to audio output device
 	audio = sceAudioOutOpen(ORBIS_USER_SERVICE_USER_ID_SYSTEM, ORBIS_AUDIO_OUT_PORT_TYPE_MAIN, 0, 256, 48000, ORBIS_AUDIO_OUT_PARAM_FORMAT_S16_STEREO);
 
 	if (audio <= 0)
 	{
-		LOG("[ERROR] Failed to open audio on main port");
+		LOG("[خطأ] فشل فتح الصوت على المنفذ الرئيسي");
 		return audio;
 	}
 
-	// Create a window context
-	LOG( "Creating a window");
+	LOG("إنشاء نافذة");
 	window = SDL_CreateWindow("main", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 	if (!window) {
 		LOG("SDL_CreateWindow: %s", SDL_GetError());
 		return (-1);
 	}
 
-	// Create a renderer (OpenGL ES2)
 	renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (!renderer) {
 		LOG("SDL_CreateRenderer: %s", SDL_GetError());
 		return (-1);
 	}
 
-	// Initialize jailbreak
 	if (!initialize_jbc())
 		terminate();
 
@@ -424,118 +381,102 @@ s32 main(s32 argc, const char* argv[])
 	mkdirs(CHEATSMGR_LOCAL_CACHE);
 	mkdirs(GOLDCHEATS_PATCH_PATH "settings/");
 	
-	// Load freetype
 	if (sceSysmoduleLoadModule(ORBIS_SYSMODULE_FREETYPE_OL) < 0)
 	{
-		LOG("Failed to load freetype!");
+		LOG("فشل تحميل freetype!");
 		return (-1);
 	}
 
-	// Load MsgDialog
 	if (sceSysmoduleLoadModule(ORBIS_SYSMODULE_MESSAGE_DIALOG) < 0 ||
 		sceSysmoduleLoadModule(ORBIS_SYSMODULE_IME_DIALOG) < 0)
 	{
-		LOG("Failed to load dialog!");
+		LOG("فشل تحميل Dialog!");
 		return (-1);
 	}
 
 	if (sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_COMMON_DIALOG) < 0 ||
 		sceCommonDialogInitialize() < 0)
 	{
-		LOG("Failed to init CommonDialog!");
+		LOG("فشل تهيئة CommonDialog!");
 		return (-1);
 	}
 
-	// register exit callback
 	atexit(terminate);
 	
-	// Load texture
 	if (!LoadTextures_Menu())
 	{
-		LOG("Failed to load menu textures!");
+		LOG("فشل تحميل نسيجات القائمة!");
 		return (-1);
 	}
 
 #ifndef DEBUG_ENABLE_LOG
-	// Splash screen logo (fade-in)
 	drawSplashLogo(1);
 #endif
 
-	// Load application settings
 	load_app_settings(&gcm_config);
 
-	// Unpack application data on first run
 	if (strncmp(gcm_config.app_ver, CHEATSMGR_VERSION, sizeof(gcm_config.app_ver)) != 0)
 	{
 		if (gcm_config.overwrite && extract_zip(CHEATSMGR_APP_PATH "misc/" LOCAL_TEMP_ZIP, GOLDHEN_PATH "/"))
 		{
 			char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
 			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
-			show_message("Successfully installed local application data:\n\n- %s- %s", cheat_ver, patch_ver);
+			show_message("تم تثبيت بيانات التطبيق المحلية بنجاح:\n\n- %s- %s", cheat_ver, patch_ver);
 			free(cheat_ver);
 			free(patch_ver);
 		}
 
+
 		strncpy(gcm_config.app_ver, CHEATSMGR_VERSION, sizeof(gcm_config.app_ver));
-		save_app_settings(&gcm_config);
-	}
+save_app_settings(&gcm_config);
 
-	// Setup font
-	SetExtraSpace(-1);
-	SetCurrentFont(font_console_regular);
+SetExtraSpace(-1);
+SetCurrentFont(font_console_regular);
 
-	registerSpecialChars();
-	initMenuOptions();
+registerSpecialChars();
+initMenuOptions();
 #ifndef DEBUG_ENABLE_LOG
-	// Splash screen logo (fade-out)
-	drawSplashLogo(-1);
+drawSplashLogo(-1);
 #endif
-	SDL_DestroyTexture(menu_textures[pslogo_png_index].texture);
-	
-	//Set options
-	update_callback(!gcm_config.update);
+SDL_DestroyTexture(menu_textures[pslogo_png_index].texture);
 
-	SDL_CreateThread(&LoadSounds, "audio_thread", &gcm_config.music);
+update_callback(!gcm_config.update);
+
+SDL_CreateThread(&LoadSounds, "audio_thread", &gcm_config.music);
 #ifndef DEBUG_ENABLE_LOG
-	Draw_MainMenu_Ani();
+Draw_MainMenu_Ani();
 #endif
 
-	while (!close_app)
-	{
+while (!close_app)
+{
 #ifdef DEBUG_ENABLE_LOG
-        startFrameTicks = SDL_GetTicks();
-        deltaFrameTicks = startFrameTicks - lastFrameTicks;
-        lastFrameTicks  = startFrameTicks;
+    startFrameTicks = SDL_GetTicks();
+    deltaFrameTicks = startFrameTicks - lastFrameTicks;
+    lastFrameTicks  = startFrameTicks;
 #endif
-		// Clear the canvas
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
-		SDL_RenderClear(renderer);
-		orbisPadUpdate();
-		drawScene();
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
+	SDL_RenderClear(renderer);
+	orbisPadUpdate();
+	drawScene();
 
-		// Draw help
-		helpFooter((last_menu_id[menu_id] == MENU_UPDATE_CHEATS) ? MENU_CODE_OPTIONS : menu_id);
+	helpFooter((last_menu_id[menu_id] == MENU_UPDATE_CHEATS) ? MENU_CODE_OPTIONS : menu_id);
 
 #ifdef DEBUG_ENABLE_LOG
-		// Calculate FPS and ms/frame
-		SetFontColor(APP_FONT_COLOR | 0xFF, 0);
-		DrawFormatString(50, 960, "FPS: %d", (1000 / deltaFrameTicks));
+	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
+	DrawFormatString(50, 960, "FPS: %d", (1000 / deltaFrameTicks));
 #endif
-		// Propagate the updated window to the screen
-		SDL_RenderPresent(renderer);
-	}
+	SDL_RenderPresent(renderer);
+}
 
 #ifndef DEBUG_ENABLE_LOG
-	if (gcm_config.doAni)
-		drawEndLogo();
+if (gcm_config.doAni)
+	drawEndLogo();
 #endif
 
-    // Cleanup resources
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    // Stop all SDL sub-systems
-    SDL_Quit();
-	http_end();
-	orbisPadFinish();
-	return 0;
+SDL_DestroyRenderer(renderer);
+SDL_DestroyWindow(window);
+SDL_Quit();
+http_end();
+orbisPadFinish();
+return 0;
 }
